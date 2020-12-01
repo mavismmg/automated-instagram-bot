@@ -1,6 +1,7 @@
 from selenium import webdriver
 
 import time
+import random
 
 class InstagramLogin:
     def __init__(self, browser, username, password):
@@ -31,14 +32,39 @@ class InstaLikes:
         self.browser = browser
         browser.get('https://www.instagram.com/explore/tags/' + hashtag + '/')
         time.sleep(3)
-        for i in range(1, 3):
-            browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+
+        #Temporary implementation - outdated
+        image_hrefs = []
+        for i in range(1, 7):
+            try:
+                browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+                time.sleep(3)
+                href_in_range = browser.find_elements_by_tag_name('a')
+                href_in_range = [elem.get_attribute('href') for elem in href_in_range if '.com/p/' in elem.get_attribute('href')]
+
+                [image_hrefs.append(href) for href in href_in_range if href not in image_hrefs]
+
+                print(hashtag + ' images: ' + str(len(image_hrefs)))
+
+            except Exception: continue
+
+        likeable_image = len(image_hrefs)
+        for image_href in image_hrefs:
+            browser.get(image_href)
             time.sleep(3)
+            browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+            try:
+                time.sleep(random.randint(2, 4))
+                like_button = lambda: browser.find_elements_by_xpath('//span[@aria-label="Like"]').click()
+                like_button().click()
 
-        hrefs = browser.find_elements_by_tag_name('a')
-        image_hrefs = [elem.get_attribute['href'] for elem in hrefs]
-        image_hrefs = [href for href in image_hrefs if hashtag in href]
-        print(hashtag + 'images:' + str(len(image_hrefs)))
+                for second in reversed(range(0, random.randint(18, 28))):
+                    print("#" + hashtag + ': likeable images left: ' + str(likeable_image) + "  | Sleeping " + str(second))
+                    time.sleep(3)
 
-insta_user = InstagramLogin(webdriver.Firefox(), "username", "passworld")
-insta_user.login("cars")
+            except Exception as e: time.sleep(3)
+            likeable_image -= 1
+
+#Temporary
+insta_user = InstagramLogin(webdriver.Firefox(), "username", "password")
+insta_user.login("hashtag")
