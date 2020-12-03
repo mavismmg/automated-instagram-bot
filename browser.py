@@ -82,7 +82,7 @@ class InstaScript:
 
 
 #Temporary
-insta_user = InstagramLogin(webdriver.Firefox(), "starfaker5301", "hello2world1999")
+insta_user = InstagramLogin(webdriver.Firefox(), "username", "password")
 hashtags = ['bike', 'bikes', 'cars']
 tag = random.choice(hashtags)
 insta_user.login(tag)
