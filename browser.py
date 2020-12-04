@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 import time
 import random
@@ -47,37 +48,76 @@ class InstaScript:
 
             except Exception: continue
 
-        like_flag = 5
-        like_count = 0
         likeable_image = len(image_hrefs)
+        swap_flagRange = 0
         for image_href in image_hrefs:
             browser.get(image_href)
             time.sleep(3)
-            like_count = like_count + 1
+            random_countValue_generator = random.randint(1, 5)
+            random_flagValue_generator = random.randint(1, 5)
+            not_valueConst = random.randint(1, 2)
+            not_valueConst = not_valueConst/2
+            valueConst = 4
+
             try:
                 time.sleep(random.randint(2, 4))
-                if (like_count == like_flag):
-                    print("Sleeping ...")
+
+                if random_countValue_generator == random_flagValue_generator:
+                    print("Sleeping")
+
                     time.sleep(random.randint(18, 360))
-                    like_count = 0
+                    swap_flagRange = swap_flagRange + not_valueConst
+
+                    if swap_flagRange == valueConst:
+                        print("Swap")
+                        getUser_profile = browser.find_elements_by_tag_name('a')
+                        getUser_profile.click()
+
+                        p_image_hrefs = []
+                        for i in range(1, 14):
+                            browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+                            time.sleep(3)
+                            profile_href_in_range = browser.find_elements_by_tag_name('a')
+                            profile_href_in_range = [p_elem.get_attribute('href') for p_elem in profile_href_in_range if '.com/p/' in p_elem.get_attribute('href')]
+
+                            [p_image_hrefs.append(href) for href in href_in_range if href not in p_image_hrefs]
+
+                            print(hashtag + ' profile images: ' +str(len(p_image_hrefs)))
+
+                            random_pcountValue_generator = random.randint(1, 3)
+                            random_pflagValue_generator = random.randint(1, 3)
+
+                            # Organize in functions
+                            if random_pcountValue_generator == random_pflagValue_generator:
+                                print("Profile Sleeping:")
+                                time.sleep(random.randint(12, 25))
+                                getUser_profile = browser.find_elements_by_tag_name('a')
+                                getUser_profile.click()
+                                time.sleep(3)
+                                user_follow = browser.find_elements_by_xpath("//button[text()='Follow']")
+                                user_follow.click()
+                                time.sleep(3)
+                                getHome_feed = browser.find_elements_by_css_selector('[aria-label="Home"]')
+                                getHome_feed.click()
+                                time.sleep(3)
+                                search_hashtag = browser.find_elements_by_xpath("//span[text()='Search']")
+                                search_hashtag.sendkeys('#' + random.choice(hashtag))
+                                search_hashtag.sendkeys(Keys.ENTER)
+                                time.sleep(3)
+                            else:
+                                like_pimages = lambda: browser.find_elements_by_css_selector('[aria-label="Like"')[random.randint(0, 6)].click()
+                                like_pimages().click()
+
                 else:
                     like_button = lambda: browser.find_elements_by_css_selector('[aria-label="Like"]')[random.randint(0, 12)].click()
                     like_button().click()
 
                 for second in reversed(range(0, random.randint(18, 28))):
-                    print("#" + hashtag + " | Sleeping " + str(second))
+                    print("#" + hashtag + " count " + str(second))
                     time.sleep(1)
 
             except Exception as e: time.sleep(2)
             likeable_image -= 1
-
-        follow_user = len(image_hrefs)
-        for image_href in image_hrefs:
-            browser.get(image_href)
-            time.sleep(3)
-
-            follow_button = lambda : browser.find_elements_by_css_selector("button")[random.randint(5, 10)].click()
-            follow_button().click()
 
 def Main():
     ObjUser = open("USERNAME.txt", "r")
