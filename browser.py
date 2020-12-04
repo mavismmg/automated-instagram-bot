@@ -1,3 +1,5 @@
+#Copyright 2020, Mateus Jorge, All rights reserved.
+
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
