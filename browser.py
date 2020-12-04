@@ -9,7 +9,7 @@ class InstagramLogin:
         self.username = username
         self.password = password
 
-    def login(self, hashtag):
+    def Login(self, hashtag):
         browser = self.browser
         HomePage(browser)
         time.sleep(5)
@@ -33,7 +33,6 @@ class InstaScript:
         browser.get('https://www.instagram.com/explore/tags/' + hashtag + '/')
         time.sleep(3)
 
-        #Temporary implementation - outdated
         image_hrefs = []
         for i in range(1, 7):
             try:
@@ -80,9 +79,14 @@ class InstaScript:
             follow_button = lambda : browser.find_elements_by_css_selector("button")[random.randint(5, 10)].click()
             follow_button().click()
 
+def Main():
+    ObjUser = open("USERNAME.txt", "r")
+    ObjPassword = open("PASSWORD.txt", "r")
+    ObjHashtag = open("HASHTAGS.txt", "r")
 
-#Temporary
-insta_user = InstagramLogin(webdriver.Firefox(), "username", "password")
-hashtags = ['bike', 'bikes', 'cars']
-tag = random.choice(hashtags)
-insta_user.login(tag)
+    insta_user = InstagramLogin(webdriver.Firefox(), ObjUser.read(), ObjPassword.read())
+    tag = random.choice(ObjHashtag.readlines())
+    insta_user.Login(tag)
+
+if __name__ == '__main__':
+    Main()
