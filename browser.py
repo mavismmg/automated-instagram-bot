@@ -7,7 +7,6 @@ import time
 import random
 
 # Global Variables
-
 Value = 3
 Buffer = 5
 Flag = 1
@@ -46,6 +45,7 @@ class Script:
         image_hrefs = []
         for i in range(1, 7):
             try:
+                # Attach all ranged hrefs to an array
                 browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
                 time.sleep(Value)
                 href_in_range = browser.find_elements_by_tag_name('a')
@@ -58,7 +58,7 @@ class Script:
             except Exception: continue
 
         likeable_image = len(image_hrefs)
-        swap_flagRange = 0
+        swap = 0
 
         for image_href in image_hrefs:
             browser.get(image_href)
@@ -74,15 +74,19 @@ class Script:
                     print("Sleeping")
 
                     time.sleep(random.randint(18, 360))
-                    swap_flagRange = swap_flagRange + notConst
+                    swap = swap + notConst
 
-                    if swap_flagRange == valueConst:
+                    if swap == valueConst:
                         print("Swap")
-                        getUser_profile = browser.find_elements_by_tag_name('a')
-                        getUser_profile.click()
+
+                        # Get into random user profile
+                        # Beggining of the Swap script
+                        profile = getUserProfile(browser)
+                        profile.click()
 
                         p_image_hrefs = []
                         for i in range(1, 14):
+                            # Attach all ranged hrefs to an array
                             browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
                             time.sleep(3)
                             profile_href_in_range = browser.find_elements_by_tag_name('a')
@@ -92,32 +96,23 @@ class Script:
 
                             print(hashtag + ' profile images: ' +str(len(p_image_hrefs)))
 
-                            random_pcountValue_generator = random.randint(1, 3)
-                            random_pflagValue_generator = random.randint(1, 3)
+                            p_countValue, p_flagValue , p_notConst = randomGenerator()
+                            # random_pcountValue_generator = random.randint(1, 3)
+                            # random_pflagValue_generator = random.randint(1, 3)
 
-                            # Organize in functions
-                            if random_pcountValue_generator == random_pflagValue_generator:
-                                print("Profile Sleeping:")
+                            if p_countValue == p_flagValue:
+                                print("Profile Sleeping and Swaping script:")
+
                                 time.sleep(random.randint(12, 25))
-                                getUserProfile()
+                                p_profile = getUserProfile(browser)
+
+                                # Create a function to do other stuff with the bot using the p_profile variable wich
+                                # return the state of the profiel
+
                                 followUser()
                                 getHome()
                                 getHashtag(browser, flag)
 
-
-                                # getUser_profile = browser.find_elements_by_tag_name('a')
-                                # getUser_profile.click()
-                                # time.sleep(3)
-                                # user_follow = browser.find_elements_by_xpath("//button[text()='Follow']")
-                                # user_follow.click()
-                                # time.sleep(3)
-                                # getHome_feed = browser.find_elements_by_css_selector('[aria-label="Home"]')
-                                # getHome_feed.click()
-                                # time.sleep(3)
-                                # search_hashtag = browser.find_elements_by_xpath("//span[text()='Search']")
-                                # search_hashtag.sendkeys('#' + random.choice(hashtag))
-                                # search_hashtag.sendkeys(Keys.ENTER)
-                                # time.sleep(3)
                             else:
                                 like_pimages = lambda: browser.find_elements_by_css_selector('[aria-label="Like"')[random.randint(0, 6)].click()
                                 like_pimages().click()
@@ -135,8 +130,8 @@ class Script:
 
 def getUserProfile(self):
     browser = self.browser
-    browser.find_elements_by_tag_name('a').click()
-    time.sleep(Value)
+    # Return the element of the profile
+    return browser.find_elements_by_tag_name('a')
 
 def getHome(self):
     browser = self.browser
@@ -146,6 +141,7 @@ def getHome(self):
 def getHashtag(browser, flag):
     ObjHashtag = open("HASHTAGS.txt", "r")
 
+    # Verify if it's the first time that the script is running
     if flag == Flag:
         browser.find_element_by_xpath("//span[text()='Search']")
         tag = browser.sendkeys("#" + random.choice(ObjHashtag.readlines()))
@@ -162,6 +158,7 @@ def followUser(self):
     time.sleep(Value)
 
 def randomGenerator():
+    # Generate random parameters
     parameterValue = random.randint(1, 5)
     flagValue = random.randint(1, 5)
     notConst = random.randint(1, 2)
