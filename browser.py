@@ -1,4 +1,4 @@
-#Copyright 2020, Mateus Jorge, All rights reserved.
+#Copyright 2020, Mateus Jorge - suminz9, All rights reserved.
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -81,8 +81,9 @@ class Script:
 
                         # Get into random user profile
                         # Beggining of the Swap script
-                        profile = getUserProfile(browser)
-                        profile.click()
+                        # getUserProfile(browser)
+                        profile = browser.find_elements_by_tag_name('a').click() # Temporary
+                        profile().click()
 
                         p_image_hrefs = []
                         for i in range(1, 14):
@@ -97,28 +98,54 @@ class Script:
                             print(hashtag + ' profile images: ' +str(len(p_image_hrefs)))
 
                             p_countValue, p_flagValue , p_notConst = randomGenerator()
+                            p_images, t_images = randomLikeGenerator()
                             # random_pcountValue_generator = random.randint(1, 3)
                             # random_pflagValue_generator = random.randint(1, 3)
 
                             if p_countValue == p_flagValue:
-                                print("Profile Sleeping and Swaping script:")
+                                print("Profile Sleeping and Swaping script:") # Temporary
+                                break
 
-                                time.sleep(random.randint(12, 25))
-                                p_profile = getUserProfile(browser)
-
-                                # Create a function to do other stuff with the bot using the p_profile variable wich
-                                # return the state of the profiel
-
-                                followUser()
-                                getHome()
-                                getHashtag(browser, flag)
+                                # time.sleep(random.randint(12, 25))
+                                # p_profile = getUserProfile(browser)
+                                # p_profile.click()
+                                #
+                                # # Create a function to do other stuff with the bot using the p_profile variable which
+                                # # return the state of the profiel
+                                #
+                                # followUser()
+                                # getHome()
+                                # getHashtag(browser, flag)
 
                             else:
-                                like_pimages = lambda: browser.find_elements_by_css_selector('[aria-label="Like"')[random.randint(0, 6)].click()
+                                like_pimages = lambda: browser.find_elements_by_css_selector('[aria-label="Like"')[p_images].click()
                                 like_pimages().click()
 
+                            time.sleep(random.randint(12, 25))
+                            p_profile = getUserProfile(browser)
+                            p_profile.click()
+
+                            # Create a function to do other stuff with the bot using the p_profile variable which
+                            # return the state of the profiel
+
+                            userFollow = browser.find_elements_by_xpath("//button[text()='Follow']").click()
+                            userFollow().click()
+                            time.sleep(Value)
+
+                            resetPage = browser.find_elements_by_css_selector("[aria-label='Home']").click()
+                            resetPage().click()
+                            time.sleep(Value)
+
+                            new_tag = getHashtag() # Temporary
+                            browser.get('https://www.instagram.com/explore/tags/' + new_tag + '/')
+                            time.sleep(Value)
+
+                            # followUser()
+                            # getHome()
+                            # getHashtag(browser, flag)
+
                 else:
-                    like_button = lambda: browser.find_elements_by_css_selector('[aria-label="Like"]')[random.randint(0, 12)].click()
+                    like_button = lambda: browser.find_elements_by_css_selector('[aria-label="Like"]')[t_images].click()
                     like_button().click()
 
                 for second in reversed(range(0, random.randint(18, 28))):
@@ -131,7 +158,7 @@ class Script:
 def getUserProfile(self):
     browser = self.browser
     # Return the element of the profile
-    return browser.find_elements_by_tag_name('a')
+    return browser.find_elements_by_tag_name('a').click()
 
 def getHome(self):
     browser = self.browser
@@ -165,6 +192,12 @@ def randomGenerator():
     notConst = notConst / 2
 
     return parameterValue, flagValue, notConst
+
+def randomLikeGenerator():
+    profile_images = random.randint(0, 6)
+    tag_images =  random.randint(0, 12)
+
+    return profile_images, tag_images
 
 def Main():
     ObjUser = open("USERNAME.txt", "r")
