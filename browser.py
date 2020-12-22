@@ -55,7 +55,6 @@ class ActivityFeed:
         activity_feed.click()
         time.sleep(3)
 
-# Change, make it clean by creating a LikeUser class
 class Script:
     def __init__(self, browser, hashtag, flag):
         self.browser = browser
@@ -64,21 +63,6 @@ class Script:
         flag = Flag
 
         image_hrefs = getAttributesScript(browser, hashtag)
-
-            # image_hrefs = []
-            # for i in range(1, 7):
-            #     try:
-            #         # Attach all ranged hrefs to an array
-            #         browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-            #         time.sleep(Value)
-            #         href_in_range = browser.find_elements_by_tag_name('a')
-            #         href_in_range = [elem.get_attribute('href') for elem in href_in_range if '.com/p/' in elem.get_attribute('href')]
-            #
-            #         [image_hrefs.append(href) for href in href_in_range if href not in image_hrefs]
-            #
-            #         print(hashtag + ' images: ' + str(len(image_hrefs)))
-            #
-            #     except Exception: continue
 
         likeable_image = len(image_hrefs)
         Swap = 0
@@ -105,22 +89,9 @@ class Script:
                     if Swap == valueConst:
                         print("Swap")
 
-                        # Get into random user profile
-                        # Beginning of the Swap script
-                        # getUserProfile(browser)
-
                         for i in range(1, 14):
                             # Attach all ranged hrefs to an array
                             profile_image_hrefs = getAttributesScript(browser, hashtag)
-
-                                # browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
-                                # time.sleep(3)
-                                # profile_href_in_range = browser.find_elements_by_tag_name('a')
-                                # profile_href_in_range = [p_elem.get_attribute('href') for p_elem in profile_href_in_range if '.com/p/' in p_elem.get_attribute('href')]
-                                #
-                                # [p_image_hrefs.append(href) for href in href_in_range if href not in p_image_hrefs]
-                                #
-                                # print(hashtag + ' profile images: ' +str(len(p_image_hrefs)))
 
                             profile_countValue, profile_flagValue , profile_notConst = randomGenerator()
                             profile_images, tag_images = randomLikeGenerator()
@@ -136,46 +107,15 @@ class Script:
 
                             else:
                                 FollowUser(browser)
-                                    # userFollow = browser.find_elements_by_xpath("//button[text()='Follow']").click()  # Temporary
-                                    # userFollow().click()
-                                    # time.sleep(Value)
-
                                 LikeImage(browser)
-                                    # like_pimages = lambda: browser.find_elements_by_css_selector('[aria-label="Like"]')[
-                                    #     random.randint(0, 8)].click()
-                                    # like_pimages().click()
 
                             time.sleep(random.randint(12, 25))
-                            # p_profile = getUserProfile(browser) Need to be fixed
-                            # p_profile.click()
 
-                            # Create a function to do other stuff with the bot using the p_profile variable which
-                            # return the state of the profiel
-
-
-                            # resetPage = browser.find_elements_by_css_selector("[aria-label='Home']").click()
-                            # resetPage().click()
-                            # time.sleep(Value)
-                            #
-                            # new_tag = getHashtag() # Temporary
-                            # browser.get('https://www.instagram.com/explore/tags/' + new_tag + '/')
-                            # time.sleep(Value)
-
-                            # followUser()
-                            # getHome()
-                            # getHashtag(browser, flag)
                 else:
                     LikeImage(browser)
-                        # like_button = lambda: browser.find_elements_by_css_selector('[aria-label="Like"]')[random.randint(0, 6)].click()
-                        # like_button().click()
                     FollowUser(browser)
-                        # userFollow = browser.find_elements_by_xpath("//button[text()='Follow']").click()  # Temporary
-                        # userFollow().click()
 
                 timedOutCounter(hashtag)
-                    # for second in reversed(range(0, random.randint(18, 28))):
-                    #     print("#" + hashtag + " count " + str(second))
-                    #     time.sleep(1)
 
             except Exception as e: time.sleep(2)
             likeable_image -= 1
@@ -185,10 +125,6 @@ class Script:
 #     # Return the element of the profile
 #     return browser.find_elements_by_tag_name('a').click()
 #
-# def getHome(self):
-#     browser = self.browser
-#     browser.find_elements_by_css_selector("[aria-label='Home']").click()
-#     time.sleep(Value)
 
 def timedOut():
     time.sleep(random.randint(18, 360))
@@ -232,11 +168,6 @@ def getHashtag(browser, flag):
         tag = random.choice(ObjHashtag.readlines())
 
     return tag
-
-# def followUser(self):
-#     browser = self.browser
-#     browser.find_element_by_xpath("//button[text()='Follow']").click()
-#     time.sleep(Value)
 
 def randomGenerator():
     # Generate random parameters
