@@ -78,44 +78,44 @@ class Script:
         flag = Flag
         image_hrefs = getAttributesScript(browser, hashtag)
         likeable_image = len(image_hrefs)
-        # for image_href in image_hrefs:
-        #     browser.get(image_href)
-        #     time.sleep(3)
-        #     countValue, flagValue = randomGenerator()
-        #     valueConst = 4
-        #     ScriptChanger = None
-        #     try:
-        #         time.sleep(random.randint(2, 4))
-        #         if countValue == flagValue:
-        #             print(Messages(1))
-        #             timedOut()
-        #             ScriptChanger = Swap()
-        #             if ScriptChanger == valueConst:
-        #                 print(Messages(0))
-        #                 ScriptChanger = None
-        #                 for i in range(1, 14):
-        #                     # Attach all ranged hrefs to an array
-        #                     profile_image_hrefs = getAttributesScript(browser, hashtag)
-        #                     profile_countValue, profile_flagValue , profile_notConst = randomGenerator()
-        #                     profile_images, tag_images = randomLikeGenerator()
-        #                     # Make an use for profile_image_hrefs
-        #                     print(profile_countValue, profile_flagValue, profile_notConst) # Temporary
-        #                     print(profile_images, tag_images) # Temporary
-        #                     if profile_countValue == profile_flagValue:
-        #                         print(Messages(2))
-        #                         HomePage(browser) # Get back into homepage
-        #                         ActivityFeed(browser) # Make the bot check if someone followed him
-        #                     else:
-        #                         LikeImage(browser)
-        #
-        #                     time.sleep(random.randint(12, 25))
-        #         else:
-        #             LikeImage(browser)
-        #
-        #         timedOutCounter(hashtag)
-        #
-        #     except Exception as e: time.sleep(2)
-        #     likeable_image -= 1
+        for image_href in image_hrefs:
+            browser.get(image_href)
+            time.sleep(3)
+            countValue, flagValue = randomGenerator()
+            valueConst = 4
+            ScriptChanger = None
+            try:
+                time.sleep(random.randint(2, 4))
+                if countValue == flagValue:
+                    print(Messages(1))
+                    timedOut()
+                    ScriptChanger = Swap()
+                    if ScriptChanger == valueConst:
+                        print(Messages(0))
+                        ScriptChanger = None
+                        for i in range(1, 14):
+                            # Attach all ranged hrefs to an array
+                            profile_image_hrefs = getAttributesScript(browser, hashtag)
+                            profile_countValue, profile_flagValue , profile_notConst = randomGenerator()
+                            profile_images, tag_images = randomLikeGenerator()
+                            # Make an use for profile_image_hrefs
+                            print(profile_countValue, profile_flagValue, profile_notConst) # Temporary
+                            print(profile_images, tag_images) # Temporary
+                            if profile_countValue == profile_flagValue:
+                                print(Messages(2))
+                                HomePage(browser) # Get back into homepage
+                                ActivityFeed(browser) # Make the bot check if someone followed him
+                            else:
+                                LikeImage(browser)
+
+                            time.sleep(random.randint(12, 25))
+                else:
+                    LikeImage(browser)
+
+                timedOutCounter(hashtag)
+
+            except Exception as e: time.sleep(2)
+            likeable_image -= 1
 
         for follow_href in image_hrefs:
             browser.get(follow_href)
