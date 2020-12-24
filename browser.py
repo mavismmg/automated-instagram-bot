@@ -43,7 +43,8 @@ class FollowUser:
         username_follow = self.browser.find_elements_by_xpath("//button[text()='Follow']")[random.randint(0, 2)].click()
         username_follow().click()
         time.sleep(3)
-        profile_name = self.browser.find_elements_by_tag_name('h1').read("text()")
+        getUrl = self.browser.url
+        profile_name = getUrl.split("/")
         profile = getAttributesScript(browser, profile_name)
         profile_likeable = len(profile)
         for profiles in profile:
