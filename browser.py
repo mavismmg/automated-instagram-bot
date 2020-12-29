@@ -6,30 +6,32 @@ from selenium.webdriver.common.keys import Keys
 import time
 import random
 import csv
-
+import engine
+import constantes
+import dbusers
+import datetime
 # Global Variables
-Buffer = 5
 Flag = 1
 
 
-class InstagramLogin:
-    def __init__(self, browser, username, password):
-        self.browser = browser
-        self.username = username
-        self.password = password
+def login(browser, hashtag, flag):
+    HomePage(browser)
+    time.sleep(5)
+    username_input = browser.find_element_by_css_selector("input[name='username']")
+    password_input = browser.find_element_by_css_selector("input[name='password']")
+    username_input.send_keys(constantes.INST_USER)
+    password_input.send_keys(constantes.INST_PASS)
+    login_button = browser.find_element_by_xpath("//button[@type='submit']")
+    login_button.click()
+    time.sleep(5)
+    Script(browser, hashtag, flag)
 
-    def login(self, hashtag, flag):
-        browser = self.browser
-        HomePage(browser)
-        time.sleep(Buffer)
-        username_input = self.browser.find_element_by_css_selector("input[name='username']")
-        password_input = self.browser.find_element_by_css_selector("input[name='password']")
-        username_input.send_keys(self.username)
-        password_input.send_keys(self.password)
-        login_button = browser.find_element_by_xpath("//button[@type='submit']")
-        login_button.click()
-        time.sleep(Buffer)
-        Script(browser, hashtag, flag)
+
+class Functionalities:
+    def __init__(self, browser, tag, flag):
+        self.browser = browser
+        self.tag = tag
+        self.flag = flag
 
 
 class HomePage:
@@ -41,27 +43,31 @@ class HomePage:
 class FollowUser:
     def __init__(self, browser):
         self.browser = browser
-        user_profile = self.browser.find_elements_by_tag_name('a')[random.randint(0, 6)].click()
-        user_profile().click()
+        user_profile = self.browser.find_element_by_tag_name('a')
+        user_profile.click()
         time.sleep(5)
-        username_follow = self.browser.find_elements_by_xpath("//button[text()='Seguir']")[random.randint(0, 2)].click()
-        username_follow().click()
-        time.sleep(3)
-        geturl = self.browser.url
-        profile_name = geturl.split("/")
-        print(profile_name[2])
-        profile = getAttributesScript(browser, profile_name[2])  # Indexated
-        profile_likeable = len(profile)
-        for profiles in profile:
-            browser.get(profiles)
-            time.sleep(3)
-            try:
-                time.sleep(random.randint(2, 4))
-                LikeImage(browser)
-            except Exception as e:
-                time.sleep(2)
+        try:
+            username_follow = self.browser.find_element_by_xpath("//button[text()='Seguir']")
+            username_follow.click()
+        except:
+            self.browser.find_element_by_xpath("//button[text()='Enviar mensagem']")
 
-        profile_likeable -= 1
+        time.sleep(3)
+        geturl = self.browser.current_url
+        profile_name = geturl.split("/")
+        print(profile_name[3])
+        profile = getAttributesScript(browser, profile_name[3])  # Indexated
+        profile_likeable = len(profile)
+        # for profiles in profile:
+        #     browser.get(profiles)
+        #     time.sleep(3)
+        #     try:
+        #         time.sleep(random.randint(2, 4))
+        #         LikeImage(browser)
+        #     except Exception as e:
+        #         time.sleep(2)
+        #
+        # profile_likeable -= 1
 
 
 class LikeImage:
@@ -131,47 +137,95 @@ class Script:
         #     except Exception as e:
         #         time.sleep(2)
         #     # likeable_image -= 1
+        previous_user_list = dbusers.get_followed_users()
+        new_followers = []
+        followed = 0
+        likes = 0
 
-        for follow_href in image_hrefs:
-            browser.get(follow_href)
-            time.sleep(3)
-            countValue, flagValue = randomGenerator()
-            valueConst = 4
+
+
+        image_hrefs_follow = []
+        for i in range(1, 7):
             try:
-                # time.sleep(random.randint(2, 4))
-                # profile_follow = randomLikeGenerator()
-                # if countValue == flagValue:
-                #     timedOut()
-                #     if swap == valueConst:
-                #         ScriptChanger = 0
-                #         for i in range(1, 14):
-                #             # Attach all ranged hrefs to an array
-                #             profile_image_hrefs = getAttributesScript(browser, hashtag)
-                #             profile_countValue, profile_flagValue = randomGenerator()
-                #             profile_images, tag_images = randomLikeGenerator()
-                #             # Make an use for profile_image_hrefs
-                #             # print(profile_countValue, profile_flagValue, profile_notConst)  # Temporary
-                #             print(profile_images, tag_images)  # Temporary
-                #
-                #             if profile_countValue == profile_flagValue:
-                #                 HomePage(browser)  # Get back into homepage
-                #                 ActivityFeed(browser)  # Make the bot check if someone followed him
-                #
-                #             else:
-                #                 FollowUser(browser)
-                #
-                #             time.sleep(random.randint(12, 25))
-                # else:
+                browser.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+                time.sleep(3)
+                href_in_range = browser.find_elements_by_tag_name('a')
+                href_in_range = [elem.get_attribute('href') for elem in href_in_range if
+                                 '.com/p/' in elem.get_attribute('href')]
 
-                # Create another algorithm for this one
-                FollowUser(browser)
+                [image_hrefs_follow.append(href) for href in href_in_range if href not in image_hrefs_follow]
 
-                timedOutCounter(hashtag)
+                print(hashtag + ' images: ' + str(len(image_hrefs_follow)))
 
-            except Exception as e:
-                time.sleep(2)
+                #random.choice(image_hrefs)
+
+                #FollowUser(browser)
+            except Exception:
+                continue
 
             likeable_image -= 1
+
+        for image_href_follow in image_hrefs_follow:
+            for hashtag in constantes.HASHTAGS:
+                browser.get('https://www.instagram.com/explore/tags/' + hashtag + '/')
+                time.sleep(3)
+                first_href = browser.find_element_by_xpath(
+            '//*[@id="react-root"]/section/main/article/div[1]/div/div/div[1]/div[1]/a/div')
+                first_href.click()
+
+                try:
+                    for i in range(1, 200):
+                        start = datetime.datetime.now()
+                        geturl = self.browser.current_url
+                        profile_name = geturl.split("/")
+                        likes_over_limit = False
+                        try:
+                            likes = int(browser.find_element_by_css_selector('[aria-label="Curtir"]'))
+                            if likes > constantes.LIKES_LIMIT:
+                                print("Curtidas restantes {0}".format(profile_name))
+                                likes_over_limit = True
+
+                            print("Perfil de: {0}".format(profile_name))
+                            if profile_name not in previous_user_list and not likes_over_limit:
+                                if browser.find_element_by_xpath("//button[text()='Seguir']"):
+                                    dbusers.add_user(profile_name)
+                                    browser.find_element_by_xpath("//button[text()='Seguir']").click()
+                                    followed += 1
+                                    print("Seguidos: {0}, #{1}".format(profile_name, followed))
+                                    new_followers.append(profile_name)
+
+                                image_like = self.browser.find_element_by_css_selector('[aria-label="Curtir"]')
+                                image_like.click()
+                                likes += 1
+                                print("Curtidas {0}'s post, #{1}".format(profile_name, likes))
+                                time.sleep(random.randint(5, 18))
+
+                            time.sleep(18, 36)
+
+                        except:
+                            continue
+
+                        end = datetime.datetime.now()
+                        time_elapsed = end - start
+                        print("Tempo decorrido: {0} segundos".format(time_elapsed.total_seconds()))
+
+                except:
+                    continue
+
+                #  Add new list to old list
+                for l in range(0, len(new_followers)):
+                    previous_user_list.append(new_followers[l])
+
+                print("Curtidas {} fotos.".format(likes))
+                print("Seguidos {} novas pessoas.".format(followed))
+            # browser.get(image_href_follow)
+            # time.sleep(3)
+            # random.choice(image_href_follow)
+            # FollowUser(browser)
+            # try:
+            #     FollowUser(browser)
+            # except Exception:
+            #     time.sleep(2)
 
 # def Swap():
 #     ScriptChanger = ScriptChanger + 1
@@ -187,7 +241,7 @@ def timedOut():
     time_out = time.sleep(random.randint(18, 360))
     fields = ["Time", "Seconds"]
     rows = [["Sleep", time_out]]
-    with open('GPF', 'w') as f:
+    with open('TimeOut', 'w') as f:
         write = csv.writer(f)
         write.writerow(fields)
         write.writerows(rows)
@@ -262,9 +316,14 @@ def main():
     flag = 0
     browser = webdriver.Firefox()
 
-    insta_user = InstagramLogin(browser, objUser.read(), objPassword.read())
     tag = getHashtag(browser, flag)
-    insta_user.login(tag, flag)
+
+    engine.init(browser, tag, flag)
+    engine.update(browser)
+
+    #insta_user = InstagramLogin(browser, objUser.read(), objPassword.read())
+
+    #insta_user.login(tag, flag)
 
 
 if __name__ == '__main__':
