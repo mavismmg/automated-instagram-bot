@@ -1,10 +1,11 @@
 import json
 INST_USER= INST_PASS= USER= PASS= HOST= DATABASE= POST_COMMENTS= ''
-LIKES_LIMIT= DAYS_TO_UNFOLLOW= CHECK_FOLLOWERS_EVERY= 0
-HASHTAGS= []
+LIKES_LIMIT= DAYS_TO_UNFOLLOW= CHECK_FOLLOWERS_EVERY =VALUECONST = 0
+FLAG = 1
+HASHTAGS= ["#bikeeletrica", "#bh", "#bicicletaeletrica", "#sustentavel"]
 
 def init():
-    global INST_USER, INST_PASS, USER, PASS, HOST, DATABASE, LIKES_LIMIT, DAYS_TO_UNFOLLOW, CHECK_FOLLOWERS_EVERY, HASHTAGS
+    global INST_USER, INST_PASS, USER, PASS, HOST, DATABASE, LIKES_LIMIT, DAYS_TO_UNFOLLOW, CHECK_FOLLOWERS_EVERY, HASHTAGS, VALUECONST, FLAG
 
     data = None
     with open('settings.json', 'r') as mysettings:
@@ -21,3 +22,5 @@ def init():
     CHECK_FOLLOWERS_EVERY = obj['config']['check_followers_every']
     HASHTAGS = obj['config']['hashtags']
     DAYS_TO_UNFOLLOW = obj['config']['days_to_unfollow']
+    VALUECONST = obj['config']['value_const']
+    FLAG = obj['config']['flag']
