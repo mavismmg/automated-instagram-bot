@@ -18,6 +18,14 @@ def add_user(username):
     mydb.commit()
 
 
+def add_href(href):
+    mydb = DataBasehandler.get_mydb()
+    cursor = mydb.cursor()
+    now = datetime.now().date()
+    cursor.execute("INSERT INTO previous_hrefs(href, id) VALUES(%s, %s)", (href, now))
+    mydb.commit()
+
+
 def check_unfollow_list():
     mydb = DataBasehandler.get_mydb()
     cursor = mydb.cursor()
@@ -37,6 +45,17 @@ def get_followed_users():
     mydb = DataBasehandler.get_mydb()
     cursor = mydb.cursor()
     cursor.execute("SELECT * FROM followed_users")
+    results = cursor.fetchall()
+    for r in results:
+        users.append(r[0])
+
+    return users
+
+def get_previous_hrefs():
+    users = []
+    mydb = DataBasehandler.get_mydb()
+    cursor = mydb.cursor()
+    cursor.execute("SELECT * FROM previous_hrefs")
     results = cursor.fetchall()
     for r in results:
         users.append(r[0])
