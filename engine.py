@@ -4,9 +4,9 @@ import datetime
 import time
 
 
-def init(webdriver, tag, flag):
+def init(webdriver, tag):
     constantes.init()
-    bot.login(webdriver, tag, flag)
+    bot.login(webdriver, tag)
 
 
 def update(browser):

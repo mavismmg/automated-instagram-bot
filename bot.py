@@ -62,7 +62,7 @@ class LikeImage:
         time.sleep(2)
 
 
-def login(browser, hashtag, flag):
+def login(browser, hashtag):
     HomePage(browser)
     time.sleep(5)
     username_input = browser.find_element_by_css_selector("input[name='username']")
@@ -72,7 +72,7 @@ def login(browser, hashtag, flag):
     login_button = browser.find_element_by_xpath("//button[@type='submit']")
     login_button.click()
     time.sleep(5)
-    Script(browser, hashtag, flag)
+    Script(browser, hashtag)
 
 
 def Script(browser, hashtag):
@@ -90,6 +90,7 @@ def Script(browser, hashtag):
     new_followers = []
     followed = 0
     likes = 0
+    count = 0
     # Inicio do Script
     for image_href in image_hrefs:
         # Começa a percorrer todas as imagens armazenadas no vetor image_hrefs
@@ -100,45 +101,59 @@ def Script(browser, hashtag):
         print("{}".format(profile_name))
         time.sleep(3)
         countvalue, flagvalue = randomGenerator()
-        try:
-            time.sleep(random.randint(2, 4))
-            if countvalue == constantes.VALUECONST:
-                print("{}".format('Sleeping'))
-                timedOut()
-                swap += 1
-                if swap == constantes.VALUECONST:
-                    print("{}".format('Swapping'))
-                    swap = 0
-                    for i in range(1, 14):
-                        # Mudar para perfil do usuario.
-                        # Mudar para o segundo Script
-                        Script_User(browser, profile_name)
-                        break
 
+        print("{}".format('Começando execução da primeira Tarefa'))
+        time.sleep(random.randint(2, 4))
+
+        if countvalue == constantes.VALUECONST:
+            print("{}".format('Sleeping'))
+            timedOut()
+            swap += 1
+            if swap == constantes.VALUECONST:
+                print("{}".format('Swapping'))
+                swap = 0
+                Script_User(browser, profile_name)
+                break
+
+        else:
+            like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
+            like_limit = browser.find_element_by_xpath(
+                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
+            integer = int(like_limit)
+            print('Quantida de curtidas da imagem {}'.format(integer))
+            if integer > constantes.LIKES_LIMIT:
+                print("{}".format('Não curtido'))
             else:
-                like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
-                if like > constantes.LIKES_LIMIT:
-                    print("Curtidas restantes {0}".format(profile_name))
-                    likes_over_limit = True
-
+                count += 1
+                print("Imagem curtida, total {}".format(count))
                 like.click()
-                print("Perfil de {0}".format(profile_name))
-                if profile_name not in previous_user_list:
-                    if browser.find_element_by_xpath('//button[text()="Seguir"]'):
-                        dbusers.add_user((profile_name))
-                        browser.find_element_by_xpath('//button[text()="Seguir"]').click()
-                        followed += 1
-                        print("Seguidos: {0}, #{1}".format(profile_name, followed))
-                        new_followers.append((profile_name))
 
+            print("Perfil de {0}".format(profile_name))
+            if profile_name not in previous_user_list:
+                if browser.find_element_by_xpath('//button[text()="Seguir"]'):
+                    dbusers.add_user((profile_name))
+                    browser.find_element_by_xpath('//button[text()="Seguir"]').click()
+                    followed += 1
+                    print("Seguidos: {0}, #{1}".format(profile_name, followed))
+                    new_followers.append((profile_name))
+                elif browser.find_element_by_xpath('//button[text()="Seguindo"]'):
+                    continue
+                else:
+                    continue
+            else:
                 like.click()
-                # like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[random.randint(1, 5)]
-                # like_comment().click()
+                like.sendkeys(Keys.ENTER)
+                like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[random.randint(0, 5)]
+                like_comment().click()
                 likes += 1
+                if likes > 12:
+                    print("{}".format('Colocando o bot para dormir ou realizar outras tarefas'))
+                    browser.find_element_by_css_selector('[aria-label="Adicione um comentário...').click()
+                    browser.sendkeys('Muito bom!')
+                    # Criar algo para o bot realizar
+
                 time.sleep(random.randint(5, 18))
 
-        except Exception as e:
-            time.sleep(2)
 
     likeable_image -= 1
 
@@ -160,6 +175,7 @@ def Script_User(browser, user):
     user_hrefs = getAttributesScript(browser, user)
     previous_user_href = dbusers.get_previous_hrefs()
     new_hrefs = []
+    count = 0
 
     for user_href in user_hrefs:
         browser.get(user_href)
@@ -167,16 +183,23 @@ def Script_User(browser, user):
         if user_href not in previous_user_href:
             dbusers.add_href(user_href)
             try:
+                like_limit = browser.find_element_by_xpath(
+                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
+                integer = int(like_limit)
+                print('Quantida de curtidas da imagem {}'.format(integer))
                 like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
-                if like > constantes.LIKES_LIMIT:
+                if integer > constantes.LIKES_LIMIT:
                     print('{}'.format('Excesso de curtidas'))
                     # Não curtir fotos com muitas curtidas
                 else:
+                    count += 1
+                    print('Imagem curtida, total {}'.format(count))
                     like.click()
 
             except Exception:
                 time.sleep(2)
-        else: continue
+        else:
+            continue
 
 
 def unfollow_people(browser, user):
@@ -212,129 +235,24 @@ def messages(value):
 
 def timedOut():
     time_out = []
-    time_out = time.sleep(random.randint(18, 360))
+    time_sleep = time.sleep(random.randint(18, 360))
+    print('Tempo dormindo {}'.format(time_sleep))
 
-    time.sleep(time_out)
-
-    after_flag = 0
-    flag_max = 5
-
-    if after_flag == flag_max:
-        plt.title("TimeOut Timings")
-        plt.xlabel("Axys X")
-        plt.ylabel("Axys Y")
-        plt.plot(time_out, color='k')
-        plt.show()
-    else:
-        after_flag += 1
-
-
-# class Script:
-#     def __init__(self, browser, hashtag, flag):
-#         self.browser = browser
-#         # Redirecionar para página inicial
-#         browser.get('https://www.instagram.com/explore/tags/' + hashtag + '/')
-#         time.sleep(3)
-#         # Chamada da funcao para pegar os href das imagens
-#         image_hrefs = getAttributesScript(browser, hashtag)
-#         # Variaveis
-#         flag = constantes.FLAG
-#         likeable_image = len(image_hrefs)
-#         swap = 0
-#         previous_user_list = dbusers.get_followed_users()
-#         new_followers = []
-#         followed = 0
-#         likes = 0
-#         # Inicio do Script
-#         for image_href in image_hrefs:
-#             # Começa a percorrer todas as imagens armazenadas no vetor image_hrefs
-#             browser.get(image_href)
-#             geturl = self.browser.current_url
-#             profile_name = browser.find_element_by_xpath(
-#                 '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a').text
-#             print("{}".format(profile_name))
-#             time.sleep(3)
-#             countvalue, flagvalue = randomGenerator()
-#             try:
-#                 time.sleep(random.randint(2, 4))
-#                 if countvalue == constantes.VALUECONST:
-#                     print("{}".format('Sleeping'))
-#                     timedOut()
-#                     swap += 1
-#                     if swap == constantes.VALUECONST:
-#                         print("{}".format('Swapping'))
-#                         swap = 0
-#                         for i in range(1, 14):
-#                             # Mudar para perfil do usuario.
-#                             # Mudar para o segundo Script
-#                             break
-#
-#                 else:
-#                     like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
-#                     if like > constantes.LIKES_LIMIT:
-#                         print("Curtidas restantes {0}".format(profile_name))
-#                         likes_over_limit = True
-#
-#                     like.click()
-#                     print("Perfil de {0}".format(profile_name))
-#                     if profile_name not in previous_user_list:
-#                         if browser.find_element_by_xpath('//button[text()="Seguir"]'):
-#                             dbusers.add_user((profile_name))
-#                             browser.find_element_by_xpath('//button[text()="Seguir"]').click()
-#                             followed += 1
-#                             print("Seguidos: {0}, #{1}".format(profile_name, followed))
-#                             new_followers.append((profile_name))
-#
-#                     like.click()
-#                     # like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[random.randint(1, 5)]
-#                     # like_comment().click()
-#                     likes += 1
-#                     time.sleep(random.randint(5, 18))
-#
-#             except Exception as e: time.sleep(2)
-#
-#         likeable_image -= 1
-#
-#         for l in range(0, len(new_followers)):
-#             previous_user_list.append(new_followers[l])
-#
-#             print("Curtidas {} fotos.".format(likes))
-#             print("Seguidos {} novas pessoas.".format(followed))
-
-
-# def Swap():
-#     ScriptChanger = ScriptChanger + 1
-#     return ScriptChanger
-
-
-def messages(value):
-    messages = ["Swap", "Sleeping", "Sleeping and Swapping the Bot Script"]
-    print(messages[value])
-
-
-def timedOut():
-    time_out = []
-    time_out = time.sleep(random.randint(18, 360))
-
-    time.sleep(time_out)
-
-    after_flag = 0
-    flag_max = 5
-
-    if after_flag == flag_max:
-        plt.title("TimeOut Timings")
-        plt.xlabel("Axys X")
-        plt.ylabel("Axys Y")
-        plt.plot(time_out, color='k')
-        plt.show()
-    else:
-        after_flag += 1
-
-
-def timedOutCounter(hashtag):
     for second in reversed(range(0, random.randint(18, 28))):
-        print("#" + hashtag + " Count " + str(second))
+        print('Waking up in {}'.format(second))
         time.sleep(1)
+
+    after_flag = 0
+    flag_max = 5
+
+    if after_flag == flag_max:
+        plt.title("TimeOut Timings")
+        plt.xlabel("Axys X")
+        plt.ylabel("Axys Y")
+        plt.plot(time_out, color='k')
+        plt.show()
+    else:
+        after_flag += 1
 
 
 def getAttributesScript(browser, hashtag):
@@ -394,7 +312,7 @@ def main():
 
     tag = getHashtag(browser, flag)
 
-    engine.init(browser, tag, flag)
+    engine.init(browser, tag)
     engine.update(browser)
 
 

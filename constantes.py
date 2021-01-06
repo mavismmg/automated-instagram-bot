@@ -2,7 +2,7 @@ import json
 INST_USER= INST_PASS= USER= PASS= HOST= DATABASE= POST_COMMENTS= ''
 LIKES_LIMIT= DAYS_TO_UNFOLLOW= CHECK_FOLLOWERS_EVERY =VALUECONST = 0
 FLAG = 1
-HASHTAGS= ["#bikeeletrica", "#bh", "#bicicletaeletrica", "#sustentavel"]
+HASHTAGS= ["bikeeletrica", "bh", "bicicletaeletrica", "sustentavel"]
 
 def init():
     global INST_USER, INST_PASS, USER, PASS, HOST, DATABASE, LIKES_LIMIT, DAYS_TO_UNFOLLOW, CHECK_FOLLOWERS_EVERY, HASHTAGS, VALUECONST, FLAG
