@@ -24,36 +24,6 @@ class HomePage:
         self.browser.get('https://www.instagram.com/')
 
 
-# class FollowUser:
-#     def __init__(self, browser):
-#         self.browser = browser
-#         user_profile = self.browser.find_element_by_tag_name('a')
-#         user_profile.click()
-#         time.sleep(5)
-#         try:
-#             username_follow = self.browser.find_element_by_xpath("//button[text()='Seguir']")
-#             username_follow.click()
-#         except:
-#             self.browser.find_element_by_xpath("//button[text()='Enviar mensagem']")
-#
-#         time.sleep(3)
-#         geturl = self.browser.current_url
-#         profile_name = geturl.split("/")
-#         print(profile_name[3])
-#         profile = getAttributesScript(browser, profile_name[3])  # Indexated
-#         profile_likeable = len(profile)
-#         # for profiles in profile:
-#         #     browser.get(profiles)
-#         #     time.sleep(3)
-#         #     try:
-#         #         time.sleep(random.randint(2, 4))
-#         #         LikeImage(browser)
-#         #     except Exception as e:
-#         #         time.sleep(2)
-#         #
-#         # profile_likeable -= 1
-
-
 class LikeImage:
     def __init__(self, browser):
         self.browser = browser
@@ -91,6 +61,7 @@ def Script(browser, hashtag):
     followed = 0
     likes = 0
     count = 0
+    count_string_verification = 0
     # Inicio do Script
     for image_href in image_hrefs:
         # Começa a percorrer todas as imagens armazenadas no vetor image_hrefs
@@ -116,36 +87,67 @@ def Script(browser, hashtag):
                 break
 
         else:
+            semaphore = False
             like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
-            like_limit = browser.find_element_by_xpath(
-                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
-            integer = int(like_limit)
-            print('Quantida de curtidas da imagem {}'.format(integer))
-            if integer > constantes.LIKES_LIMIT:
+            if (browser.find_element_by_xpath(
+                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span')):
+                like_limit = browser.find_element_by_xpath(
+                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
+            else:
+                like_limit = browser.find_element_by_xpath(
+                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/span/span').text
+
+            for i in range(len(like_limit)):
+                count_string_verification += 1
+                if like_limit[i] == '.':
+                    aux = float(like_limit)
+                    aux = aux * (10 ** (i+1))
+                    integer_like_limit = int(aux)
+                    print("Valor corrigido {}".format(integer_like_limit))
+                    semaphore = True
+                    count_string_verification = 0
+
+            if semaphore != True:
+                integer_like_limit = int(like_limit)
+            print('Quantida de curtidas da imagem {}'.format(integer_like_limit))
+            if integer_like_limit > constantes.LIKES_LIMIT:
                 print("{}".format('Não curtido'))
             else:
                 count += 1
                 print("Imagem curtida, total {}".format(count))
-                like.click()
+                choice = [True, False]
+                if random.choice(choice) == True:
+                    like.click()
+                    likes += 1
+                    time.sleep(random.randint(5, 20))
 
             print("Perfil de {0}".format(profile_name))
             if profile_name not in previous_user_list:
                 if browser.find_element_by_xpath('//button[text()="Seguir"]'):
                     dbusers.add_user((profile_name))
-                    browser.find_element_by_xpath('//button[text()="Seguir"]').click()
-                    followed += 1
-                    print("Seguidos: {0}, #{1}".format(profile_name, followed))
-                    new_followers.append((profile_name))
-                elif browser.find_element_by_xpath('//button[text()="Seguindo"]'):
-                    continue
+                    if random.choice(choice) == True:
+                        browser.find_element_by_xpath('//button[text()="Seguir"]').click()
+                        followed += 1
+                        print("Seguidos: {0}, #{1}".format(profile_name, followed))
+                        new_followers.append((profile_name))
+                        time.sleep(random.randint(30, 240))
+                    else:
+                        time.sleep(3)
                 else:
+                    print("{}".format('Perfil já está sendo seguido'))
                     continue
             else:
-                like.click()
-                like.sendkeys(Keys.ENTER)
-                like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[random.randint(0, 5)]
-                like_comment().click()
-                likes += 1
+                if browser.find_element_by_css_selector('[aria-label="Descurtir"]'):
+                    browser.find_element_by_css_selector('[aria-label="Descurtir"]').click()
+                    like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[random.randint(0, 8)].click()
+                    like_comment().click()
+                    likes += 1
+                else:
+                    like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
+                        random.randint(0, 8)].click()
+                    like_comment().click()
+                    likes += 1
+
                 if likes > 12:
                     print("{}".format('Colocando o bot para dormir ou realizar outras tarefas'))
                     browser.find_element_by_css_selector('[aria-label="Adicione um comentário...').click()
@@ -189,7 +191,7 @@ def Script_User(browser, user):
                 print('Quantida de curtidas da imagem {}'.format(integer))
                 like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
                 if integer > constantes.LIKES_LIMIT:
-                    print('{}'.format('Excesso de curtidas'))
+                    print('{}'.format('Não curtido'))
                     # Não curtir fotos com muitas curtidas
                 else:
                     count += 1
