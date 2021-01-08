@@ -46,7 +46,8 @@ def login(browser, hashtag):
 
 
 def Script(browser, hashtag):
-    # Mudar toda a class para function
+    # Verificando usuarios, parar de seguir
+    engine.update(browser)
     # Redirecionar para página inicial
     browser.get('https://www.instagram.com/explore/tags/' + hashtag + '/')
     time.sleep(3)
@@ -55,106 +56,146 @@ def Script(browser, hashtag):
     # Variaveis
     flag = constantes.FLAG
     likeable_image = len(image_hrefs)
-    swap = 0
     previous_user_list = dbusers.get_followed_users()
+    previous_user_href = dbusers.get_previous_hrefs()
     new_followers = []
     followed = 0
     likes = 0
     count = 0
+    swap = 0
     count_string_verification = 0
     # Inicio do Script
     for image_href in image_hrefs:
-        # Começa a percorrer todas as imagens armazenadas no vetor image_hrefs
-        browser.get(image_href)
-        geturl = browser.current_url
-        profile_name = browser.find_element_by_xpath(
-            '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a').text
-        print("{}".format(profile_name))
-        time.sleep(3)
-        countvalue, flagvalue = randomGenerator()
+        if image_href not in previous_user_href:
+            # Começa a percorrer todas as imagens armazenadas no vetor image_hrefs
+            browser.get(image_href)
+            geturl = browser.current_url
+            profile_name = browser.find_element_by_xpath(
+                '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a').text
+            print("{}".format(profile_name))
+            time.sleep(3)
+            countvalue, flagvalue = randomGenerator()
 
-        print("{}".format('Começando execução da primeira Tarefa'))
-        time.sleep(random.randint(2, 4))
+            print("{}".format('Novo ciclo'))
+            time.sleep(random.randint(2, 4))
 
-        if countvalue == constantes.VALUECONST:
-            print("{}".format('Sleeping'))
-            timedOut()
-            swap += 1
-            if swap == constantes.VALUECONST:
-                print("{}".format('Swapping'))
-                swap = 0
-                Script_User(browser, profile_name)
-                break
+            if countvalue == constantes.VALUECONST:
+                print("{}".format('Sleeping'))
+                timedOut()
+                swap += 1
+                if swap == constantes.VALUECONST:
+                    print("{}".format('Swapping'))
+                    swap = 0
+                    Script_User(browser, profile_name)
+                    break
 
-        else:
-            semaphore = False
-            like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
-            if (browser.find_element_by_xpath(
-                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span')):
-                like_limit = browser.find_element_by_xpath(
-                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
             else:
-                like_limit = browser.find_element_by_xpath(
-                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/span/span').text
-
-            for i in range(len(like_limit)):
-                count_string_verification += 1
-                if like_limit[i] == '.':
-                    aux = float(like_limit)
-                    aux = aux * (10 ** (i+1))
-                    integer_like_limit = int(aux)
-                    print("Valor corrigido {}".format(integer_like_limit))
-                    semaphore = True
-                    count_string_verification = 0
-
-            if semaphore != True:
-                integer_like_limit = int(like_limit)
-            print('Quantida de curtidas da imagem {}'.format(integer_like_limit))
-            if integer_like_limit > constantes.LIKES_LIMIT:
-                print("{}".format('Não curtido'))
-            else:
-                count += 1
-                print("Imagem curtida, total {}".format(count))
-                choice = [True, False]
-                if random.choice(choice) == True:
-                    like.click()
-                    likes += 1
-                    time.sleep(random.randint(5, 20))
-
-            print("Perfil de {0}".format(profile_name))
-            if profile_name not in previous_user_list:
-                if browser.find_element_by_xpath('//button[text()="Seguir"]'):
-                    dbusers.add_user((profile_name))
-                    if random.choice(choice) == True:
-                        browser.find_element_by_xpath('//button[text()="Seguir"]').click()
-                        followed += 1
-                        print("Seguidos: {0}, #{1}".format(profile_name, followed))
-                        new_followers.append((profile_name))
-                        time.sleep(random.randint(30, 240))
+                semaphore = False
+                like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
+                try:
+                    if (browser.find_element_by_xpath(
+                        '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span')):
+                        like_limit = browser.find_element_by_xpath(
+                            '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
                     else:
-                        time.sleep(3)
-                else:
-                    print("{}".format('Perfil já está sendo seguido'))
-                    continue
-            else:
-                if browser.find_element_by_css_selector('[aria-label="Descurtir"]'):
-                    browser.find_element_by_css_selector('[aria-label="Descurtir"]').click()
-                    like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[random.randint(0, 8)].click()
-                    like_comment().click()
-                    likes += 1
-                else:
-                    like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
-                        random.randint(0, 8)].click()
-                    like_comment().click()
-                    likes += 1
+                        like_limit = browser.find_element_by_xpath(
+                            '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/span/span').text
+                except Exception:
+                    print("{}".format('Não foi possível localizar nenhum elemento, continuando'))
+                    time.sleep(1)
 
-                if likes > 12:
-                    print("{}".format('Colocando o bot para dormir ou realizar outras tarefas'))
-                    browser.find_element_by_css_selector('[aria-label="Adicione um comentário...').click()
-                    browser.sendkeys('Muito bom!')
-                    # Criar algo para o bot realizar
+                for i in range(len(like_limit)):
+                    if like_limit[i] == '.':
+                        aux = float(like_limit)
+                        aux = aux * (10 ** (i+2))
+                        integer_like_limit = int(aux)
+                        print("Valor corrigido {}".format(integer_like_limit))
+                        semaphore = True
 
-                time.sleep(random.randint(5, 18))
+                if semaphore != True:
+                    integer_like_limit = int(like_limit)
+                print('Quantida de curtidas da imagem {}'.format(integer_like_limit))
+                if integer_like_limit > constantes.LIKES_LIMIT:
+                    print("{}".format('Não curtido'))
+                else:
+                    count += 1
+                    print("Imagem curtida, total {}".format(count))
+                    choice = [True, False]
+                    if random.choice(choice) == True and likes < 10:
+                        like.click()
+                        likes += 1
+                        time.sleep(random.randint(18, 30))
+                        if likes > 10:
+                            print("Muitas curtidas, {}. Bot timeout.".format(likes))
+                            time.sleep(random.randint(500, 800))
+                            print("Bot wakeup, após excesso de curtidas {}".format(likes))
+                            likes = 0
+
+                print("Perfil de {0}".format(profile_name))
+                if profile_name not in previous_user_list:
+                    if browser.find_element_by_xpath('//button[text()="Seguir"]'):
+                        if random.randint(1, 6) == constantes.VALUECONST:
+                            dbusers.add_user((profile_name))
+                            browser.find_element_by_xpath('//button[text()="Seguir"]').click()
+                            followed += 1
+                            print("Seguidos: {0}, #{1}".format(profile_name, followed))
+                            new_followers.append((profile_name))
+                            time.sleep(random.randint(30, 240))
+                        else:
+                            time.sleep(3)
+                            if likes > 1:
+                                print("{}".format('Colocando o bot para dormir ou realizar outras tarefas'))
+                                # Salvar imagens para classificador de imagens
+                                # selenium.common.exceptions.InvalidSelectorException: Message: Given xpath expression
+                                # "/html/body/div[5]/div[2]/div/article/div[2]/div/div/div/div/img/"
+                                # is invalid: SyntaxError: The expression is not a legal expression.
+                                img = browser.find_element_by_xpath(
+                                    '/html/body/div[5]/div[2]/div/article/div[2]/div/div/div/div/img/').text
+
+                                print("Div da imagem: {}".format(img))
+
+
+                    else:
+                        print("{}".format('Perfil já está sendo seguido'))
+                        continue
+                else:
+                    try:
+                        if browser.find_element_by_css_selector('[aria-label="Descurtir"]'):
+                            browser.find_element_by_css_selector('[aria-label="Descurtir"]').click()
+                            like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
+                                random.randint(0, 8)].click()
+                            like_comment().click()
+                            likes += 1
+                        else:
+                            like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
+                                random.randint(0, 8)].click()
+                            like_comment().click()
+                            likes += 1
+
+                        if likes > 1:  # Was 12
+                            print("{}".format('Colocando o bot para dormir ou realizar outras tarefas'))
+                            browser.find_element_by_css_selector('[aria-label="Adicione um comentário...').click()
+                            browser.sendkeys('Muito bom!')
+                            # Salvar imagens para classificador de imagens
+                            try:
+                                img = browser.find_element_by_xpath(
+                                    '/html/body/div[5]/div[2]/div/article/div[2]/div/div/div/div/img/').get_attribute(
+                                    'src')
+
+                                print("{}".format(img))
+                                img.click()
+
+                            except Exception:
+                                time.sleep(3)
+                                continue
+
+                    except Exception:
+                        continue
+
+                    time.sleep(random.randint(5, 18))
+        else:
+            print("{}".format('Imagem repetida, ignorando'))
+            continue
 
 
     likeable_image -= 1
@@ -315,7 +356,7 @@ def main():
     tag = getHashtag(browser, flag)
 
     engine.init(browser, tag)
-    engine.update(browser)
+    #engine.update(browser)
 
 
 if __name__ == '__main__':
