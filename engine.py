@@ -23,4 +23,5 @@ def follow_list_check(browser):
     print('{}'.format('Avaliando usuarios para parar de seguir'))
     users = dbusers.check_unfollow_list()
     if len(users) > 0:
+        print('{}'.format('Parando de seguir usuarios'))
         bot.unfollow_people(browser, users)

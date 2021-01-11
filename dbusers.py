@@ -33,7 +33,8 @@ def check_unfollow_list():
     results = cursor.fetchall()
     users_to_unfollow = []
     for r in results:
-        d = time_helper.days_since_date(r[1])
+        #d = time_helper.days_since_date(r[1])
+        d = 2
         if d > constantes.DAYS_TO_UNFOLLOW:
             users_to_unfollow.append(r[0])
 

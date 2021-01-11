@@ -252,23 +252,17 @@ def unfollow_people(browser, user):
         user.append(u)
 
     for perfil in user:
-        try:
-            browser.get('https://www.instagram.com/' + perfil + '/')
-            time.sleep(5)
-            unfollow_xpath = browser.find_element_by_xpath('[aria-label="Seguindo"]')
-            unfollow_confirm_xpath = \
-                '/html/body/div/section/main/div/header/section/div/div/div/div[2]/div/span/span/button/div/span'
+        browser.get('https://www.instagram.com/' + perfil + '/')
+        time.sleep(5)
+        if browser.find_element_by_css_selector('[aria-label="Seguindo"]'):
+            time.sleep(random.randint(5, 20))
+            browser.find_element_by_css_selector('[aria-label="Seguindo"]').click()
+            time.sleep(3)
+            browser.find_element_by_xpath('/html/body/div[5]/div/div/div/div[3]/button[1]').click()
+            time.sleep(3)
 
-            if browser.find_element_by_xpath(unfollow_xpath).text == 'Seguindo':
-                time.sleep(random.randint(5, 20))
-                browser.find_element_by_xpath(unfollow_xpath).click()
-                time.sleep(3)
-                browser.find_element_by_xpath(unfollow_confirm_xpath).click()
-                time.sleep(3)
+        dbusers.delete_user(perfil)
 
-            dbusers.delete_user(perfil)
-
-        except Exception: continue
 
 
 def messages(value):
