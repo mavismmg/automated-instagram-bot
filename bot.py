@@ -167,27 +167,22 @@ def Script(browser, hashtag):
 
                     print("Perfil de {0}".format(profile_name))
                     if profile_name not in previous_user_list:
-                        follow_element_check = True
-                        while(follow_element_check):
-                            try:
-                                if browser.find_element_by_xpath('//button[text()="Seguir"]'):
-                                    follow_element_check = False
-                                    time.sleep(5)
-                                    if random.randint(1, 6) == constantes.VALUECONST:
-                                        dbusers.add_user((profile_name))
-                                        browser.find_element_by_xpath('//button[text()="Seguir"]').click()
-                                        followed += 1
-                                        print("Seguidos: {0}, #{1}".format(profile_name, followed))
-                                        new_followers.append((profile_name))
-                                        time.sleep(random.randint(30, 240))
-                                    else:
-                                        time.sleep(3)
-                            except Exception:
-                                print("Perfil de {} já está sendo seguido".format(profile_name))
+                        try:
+                            if browser.find_element_by_xpath('//button[text()="Seguir"]'):
+                                follow_element_check = False
+                                time.sleep(5)
+                                if random.randint(1, 6) == constantes.VALUECONST:
+                                    dbusers.add_user((profile_name))
+                                    browser.find_element_by_xpath('//button[text()="Seguir"]').click()
+                                    followed += 1
+                                    print("Seguidos: {0}, #{1}".format(profile_name, followed))
+                                    new_followers.append((profile_name))
+                                    time.sleep(random.randint(30, 240))
+                                else:
+                                    time.sleep(3)
+                        except Exception:
+                            print("Perfil de {} já está sendo seguido".format(profile_name))
 
-                        else:
-                            print("{}".format('Perfil já está sendo seguido'))
-                            continue
                     elif profile_name in previous_user_list:
                         print("{}".format('Nova Imagem'))
                         try:
