@@ -98,7 +98,8 @@ def Script(browser, hashtag):
 
                     except Exception:
                         print("Failed to get element, trying again.")
-                        time.sleep(18)
+                        browser.refresh()
+                        time.sleep(5)
 
                 print("{}".format(profile_name))
                 time.sleep(3)
@@ -119,6 +120,7 @@ def Script(browser, hashtag):
                 else:
                     semaphore = False
                     like_element_check = True
+
                     while(like_element_check):
                         try:
                             like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
@@ -127,25 +129,42 @@ def Script(browser, hashtag):
                                 like_element_check = False
                         except Exception:
                             print("Failed to get element, trying again.")
-                    try:
-                        if (browser.find_element_by_xpath(
-                            '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span')):
-                            like_limit = browser.find_element_by_xpath(
-                                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
-                        else:
-                            like_limit = browser.find_element_by_xpath(
-                                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/span/span').text
-                    except Exception:
-                        print("{}".format('Não foi possível localizar nenhum elemento, continuando'))
-                        time.sleep(1)
+                            browser.refresh()
+                            time.sleep(5)
 
-                    for i in range(len(like_limit)):
-                        if like_limit[i] == '.':
-                            aux = float(like_limit)
-                            aux = aux * (10 ** (i+2))
-                            integer_like_limit = int(aux)
-                            print("Valor corrigido {}".format(integer_like_limit))
-                            semaphore = True
+                    like_limit_exist = True
+                    like_limit_semaphore = True
+                    cout_limit = 0
+                    while(like_limit_exist):
+                        try:
+                            if (browser.find_element_by_xpath(
+                                '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span')):
+                                like_limit = browser.find_element_by_xpath(
+                                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/div[2]/button/span').text
+                                like_limit_exist = False
+                            else:
+                                like_limit = browser.find_element_by_xpath(
+                                    '/html/body/div/section/main/div/div/article/div[3]/section[2]/div/span/span').text
+                                like_limit_exist = False
+                        except Exception:
+                            print("{}".format('Não foi possível localizar nenhum elemento, continuando'))
+                            browser.refresh()
+                            count_limit = count_limit + 1
+                            if count_limit > 5:
+                                like_limit_semaphore = False
+                                continue
+                            time.sleep(3)
+
+                    if like_limit_semaphore != False:
+                        for i in range(len(like_limit)):
+                            if like_limit[i] == '.':
+                                aux = float(like_limit)
+                                aux = aux * (10 ** (i+2))
+                                integer_like_limit = int(aux)
+                                print("Valor corrigido {}".format(integer_like_limit))
+                                semaphore = True
+                    else:
+                        like_limit = random.randint(0, 5)
 
                     if semaphore != True:
                         integer_like_limit = int(like_limit)
@@ -166,50 +185,46 @@ def Script(browser, hashtag):
                                 likes = 0
 
                     print("Perfil de {0}".format(profile_name))
-                    if profile_name not in previous_user_list:
-                        try:
-                            if browser.find_element_by_xpath('//button[text()="Seguir"]'):
-                                follow_element_check = False
-                                time.sleep(5)
-                                if random.randint(1, 6) == constantes.VALUECONST:
-                                    dbusers.add_user((profile_name))
-                                    browser.find_element_by_xpath('//button[text()="Seguir"]').click()
-                                    followed += 1
-                                    print("Seguidos: {0}, #{1}".format(profile_name, followed))
-                                    new_followers.append((profile_name))
-                                    time.sleep(random.randint(30, 240))
-                                else:
-                                    time.sleep(3)
-                        except Exception:
-                            print("Perfil de {} já está sendo seguido".format(profile_name))
-
-                    elif profile_name in previous_user_list:
-                        print("{}".format('Nova Imagem'))
-                        try:
-                            if browser.find_element_by_css_selector('[aria-label="Descurtir"]'):
-                                browser.find_element_by_css_selector('[aria-label="Descurtir"]').click()
-                                # Curtir comentario
-                                like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
-                                    random.randint(0, 8)].click()
-                                like_comment().click()
-                                likes += 1
-                                time.sleep(random.randint(5, 18))
-                                # Comentar
-                                comment = ["Muito bom!", "Legal!", ":)"]
-                                comment_profile = browser.find_element_by_css_selector(
-                                    '[aria-label="Adicione um comentário..."]')
-                                comment_profile.click()
-                                comment_profile.sendkeys(random.choice(comment))
+                    try:
+                        if browser.find_element_by_xpath('//button[text()="Seguir"]'):
+                            time.sleep(2)
+                            if random.randint(1, 6) == constantes.VALUECONST:
+                                dbusers.add_user((profile_name))
+                                browser.find_element_by_xpath('//button[text()="Seguir"]').click()
+                                followed += 1
+                                print("Seguidos: {0}, #{1}".format(profile_name, followed))
+                                new_followers.append((profile_name))
+                                time.sleep(random.randint(30, 240))
                             else:
-                                like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
-                                    random.randint(0, 8)].click()
-                                like_comment().click()
-                                likes += 1
+                                time.sleep(3)
 
-                        except Exception:
-                            time.sleep(3)
-                    else:
-                        print("Perfil de {} já foi analisado varias vezes, próximo".format(profile_name))
+                    except Exception:
+                        print("Perfil de {} já está sendo seguido".format(profile_name))
+
+                    print("{}".format('Nova Imagem'))
+                    try:
+                        if browser.find_element_by_css_selector('[aria-label="Descurtir"]'):
+                            browser.find_element_by_css_selector('[aria-label="Descurtir"]').click()
+                            # Curtir comentario
+                            like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
+                                random.randint(0, 8)].click()
+                            like_comment().click()
+                            likes += 1
+                            time.sleep(random.randint(5, 18))
+                            # Comentar
+                            comment = ["Muito bom!", "Legal!", ":)"]
+                            comment_profile = browser.find_element_by_css_selector(
+                                '[aria-label="Adicione um comentário..."]')
+                            comment_profile.click()
+                            comment_profile.sendkeys(random.choice(comment))
+                        else:
+                            like_comment = browser.find_elements_by_css_selector('[aria-label="Curtir"]')[
+                                random.randint(0, 8)].click()
+                            like_comment().click()
+                            likes += 1
+
+                    except Exception:
+                        time.sleep(3)
 
             else:
                 print("{}".format('Imagem repetida, ignorando'))
