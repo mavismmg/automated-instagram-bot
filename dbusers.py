@@ -21,7 +21,7 @@ def add_user(username):
 def add_href(href):
     mydb = DataBasehandler.get_mydb()
     cursor = mydb.cursor()
-    now = datetime.now().date()
+    now = datetime.datetime.now().date()
     cursor.execute("INSERT INTO previous_hrefs(href, id) VALUES(%s, %s)", (href, now))
     mydb.commit()
 
@@ -33,10 +33,7 @@ def check_unfollow_list():
     results = cursor.fetchall()
     users_to_unfollow = []
     for r in results:
-        #d = time_helper.days_since_date(r[1])
-        d = 2
-        if d > constantes.DAYS_TO_UNFOLLOW:
-            users_to_unfollow.append(r[0])
+        users_to_unfollow.append(r[0])
 
     return users_to_unfollow
 
