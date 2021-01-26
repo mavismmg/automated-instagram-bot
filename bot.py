@@ -134,7 +134,6 @@ def Script(browser, hashtag):
 
                     like_limit_exist = True
                     like_limit_semaphore = True
-                    cout_limit = 0
                     while(like_limit_exist):
                         try:
                             if (browser.find_element_by_xpath(
@@ -148,21 +147,22 @@ def Script(browser, hashtag):
                                 like_limit_exist = False
                         except Exception:
                             print("{}".format('Não foi possível localizar nenhum elemento, continuando'))
-                            browser.refresh()
-                            count_limit = count_limit + 1
-                            if count_limit > 5:
-                                like_limit_semaphore = False
-                                continue
-                            time.sleep(3)
+                            like_limit_exist = False
+                            like_limit = 1
+                            pass
 
                     if like_limit_semaphore != False:
-                        for i in range(len(like_limit)):
-                            if like_limit[i] == '.':
-                                aux = float(like_limit)
-                                aux = aux * (10 ** (i+2))
-                                integer_like_limit = int(aux)
-                                print("Valor corrigido {}".format(integer_like_limit))
-                                semaphore = True
+                        try:
+                            for i in range(len(like_limit)):
+                                if like_limit[i] == '.':
+                                    aux = float(like_limit)
+                                    aux = aux * (10 ** (i+2))
+                                    integer_like_limit = int(aux)
+                                    print("Valor corrigido {}".format(integer_like_limit))
+                                    semaphore = True
+                        except Exception as e:
+                            # Default value for handle errors
+                            pass
                     else:
                         like_limit = random.randint(0, 5)
 
