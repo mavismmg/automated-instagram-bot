@@ -1,0 +1,20 @@
+{
+  "db": {
+    "host": "localhost",
+    "user": "root",
+    "pass": "DB_Passwod",
+    "database": "DB_Name"
+  },
+  "instagram": {
+    "user": "username",
+    "pass": "password"
+  },
+  "config": {
+    "days_to_unfollow": 1,
+    "likes_over": 5000,
+    "check_followers_every": 3600,
+    "value_const": 4,
+    "flag": 1,
+    "hashtags": []
+  }
+}
