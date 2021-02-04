@@ -86,20 +86,18 @@ def Script(browser, hashtag):
                 # Começa a percorrer todas as imagens armazenadas no vetor image_hrefs
                 browser.get(image_href)
                 geturl = browser.current_url
-                element_check = True
-                while(element_check):
-                    try:
-                        profile_name = browser.find_element_by_xpath(
-                            '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a').text
-                        time.sleep(5)
-                        if browser.find_element_by_xpath(
-                                '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a'):
-                            element_check = False
+                try:
+                    profile_name = browser.find_element_by_xpath(
+                        '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a').text
+                    time.sleep(5)
+                    if browser.find_element_by_xpath(
+                            '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a'):
+                        time.sleep(3)
 
-                    except Exception:
-                        print("Failed to get element, trying again.")
-                        browser.refresh()
-                        time.sleep(5)
+                except Exception:
+                    print("Failed to get element, trying again.")
+                    continue
+                    time.sleep(5)
 
                 print("{}".format(profile_name))
                 time.sleep(3)
