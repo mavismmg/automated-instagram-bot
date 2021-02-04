@@ -2,12 +2,9 @@
 Automated bot for increasing visibility
 
 Requirements:
-  - Mozila
-  - Geckodriver
-  - Selenium
-  - Python 3.X
+  - Firefox
   
 Guide:
-  - Download Geckodriver: https://github.com/mozilla/geckodriver/releases
-  - Install Selenium via pip install
-  - Run browser.py
+  - Install requirements.txt
+  - create a database and modify settings.json
+  - run bot.py
