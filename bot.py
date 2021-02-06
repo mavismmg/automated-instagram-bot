@@ -92,7 +92,7 @@ def Script(browser, hashtag):
                     time.sleep(5)
                     if browser.find_element_by_xpath(
                             '/html/body/div/section/main/div/div/article/header/div[2]/div/div/span/a'):
-                        time.sleep(3)
+                        time.sleep(3 )
 
                 except Exception:
                     print("Failed to get element, trying again.")
@@ -117,18 +117,15 @@ def Script(browser, hashtag):
 
                 else:
                     semaphore = False
-                    like_element_check = True
-
-                    while(like_element_check):
-                        try:
-                            like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
-                            time.sleep(5)
-                            if browser.find_element_by_css_selector('[aria-label="Curtir"]'):
-                                like_element_check = False
-                        except Exception:
-                            print("Failed to get element, trying again.")
-                            browser.refresh()
-                            time.sleep(5)
+                    try:
+                        like = browser.find_element_by_css_selector('[aria-label="Curtir"]')
+                        time.sleep(5)
+                        if browser.find_element_by_css_selector('[aria-label="Curtir"]'):
+                            time.sleep(3)
+                    except Exception:
+                        print("Failed to get element, trying again.")
+                        continue
+                        time.sleep(5)
 
                     like_limit_exist = True
                     like_limit_semaphore = True
